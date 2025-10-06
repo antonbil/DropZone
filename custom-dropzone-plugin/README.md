@@ -1,36 +1,37 @@
 # Custom DropZone Uploader & Manager WordPress Plugin
 
-Een flexibele en configureerbare WordPress-plugin die via shortcodes upload- en beheerfunctionaliteit biedt. De plugin is ontworpen om via een centraal `JSON`-bestand meerdere, onafhankelijke "dropzone"-instanties te beheren, elk met eigen validatieregels, uploadlocaties en interface-instellingen.
+A flexible and configurable WordPress plugin that provides file upload and management functionality through shortcodes. The plugin is designed to manage multiple, independent "dropzone" instances from a central `JSON` file, each with its own validation rules, upload locations, and user interface settings.
 
-## Inhoudsopgave
-- [Functionaliteiten](#functionaliteiten)
-- [Structuur van de Plugin](#structuur-van-de-plugin)
-- [Installatie](#installatie)
-- [Configuratie (`dropzones.json`)](#configuratie-dropzonesjson)
-  - [Basisstructuur](#basisstructuur)
-  - [Configuratieparameters](#configuratieparameters)
-    - [Hoofdparameters](#hoofdparameters)
+## Table of Contents
+- [Features](#features)
+- [Plugin Structure](#plugin-structure)
+- [Installation](#installation)
+- [Configuration (`dropzones.json`)](#configuration-dropzonesjson)
+  - [Basic Structure](#basic-structure)
+  - [Configuration Parameters](#configuration-parameters)
+    - [Top-Level Parameters](#top-level-parameters)
     - [`file_rules`](#file_rules)
     - [`ui_texts`](#ui_texts)
     - [`override_config`](#override_config)
-- [Gebruik](#gebruik)
-- [JavaScript Bestanden](#javascript-bestanden)
-- [Voorbeeldconfiguratie](#voorbeeldconfiguratie)
+- [Usage](#usage)
+- [JavaScript Files](#javascript-files)
+- [Example Configuration](#example-configuration)
 
-## Functionaliteiten
+## Features
 
-*   **Centrale Configuratie:** Beheer alle dropzone-instanties vanuit één enkel `config/dropzones.json` bestand.
-*   **Dynamische Shortcodes:** De plugin genereert automatisch twee shortcodes per configuratie-entry:
-    1.  Een **Uploader Shortcode** voor het uploaden van bestanden via een drag-and-drop interface.
-    2.  Een **Manager Shortcode** voor het bekijken, hernoemen en verwijderen van reeds geüploade bestanden.
-*   **Uitgebreide Validatie:** Configureer per dropzone specifieke regels voor bestandsnamen (met regex), MIME-types, en doelmappen.
-*   **Dynamische Paden:** Doelmappen voor uploads kunnen dynamisch worden aangemaakt op basis van datum- en tijdpatronen (bijv. `Y/m`).
-*   **Aanpasbare Interface:** Wijzig de teksten en labels van de upload- en beheerinterfaces via de JSON-configuratie.
-*   **Robuuste Architectuur:** Gebouwd met een objectgeoriënteerde aanpak (PHP-klassen) voor onderhoudbaarheid en uitbreidbaarheid.
+*   **Centralized Configuration:** Manage all dropzone instances from a single `config/dropzones.json` file.
+*   **Dynamic Shortcodes:** The plugin automatically generates two shortcodes for each configuration entry:
+    1.  An **Uploader Shortcode** for uploading files via a drag-and-drop interface.
+    2.  A **Manager Shortcode** for viewing, renaming, and deleting already uploaded files.
+*   **Extensive Validation:** Configure specific rules per dropzone for filenames (using regex), MIME types, and target directories.
+*   **Dynamic Paths:** Target directories for uploads can be created dynamically based on date and time patterns (e.g., `Y/m`).
+*   **Customizable Interface:** Modify the text and labels of the upload and management interfaces through the JSON configuration.
+*   **Robust Architecture:** Built with an object-oriented approach (PHP classes) for maintainability and extensibility.
 
-## Structuur van de Plugin
+## Plugin Structure
 
-De plugin volgt een logische mappenstructuur om de verschillende onderdelen georganiseerd te houden.
+The plugin follows a logical directory structure to keep its components organized.
+
 
 /custom-dropzone-plugin/
 ├── custom-dropzone-plugin.php      # Hoofd-pluginbestand, laadt alles.
@@ -42,18 +43,18 @@ De plugin volgt een logische mappenstructuur om de verschillende onderdelen geor
 │   └── ovd-manager.js              # Voorbeeld JS voor de 'ovd' manager.
 │   └── (andere JS-bestanden...)
 └── README.md                       # Deze documentatie.
-## Installatie
+## Installation
 
-1.  Plaats de volledige `custom-dropzone-plugin` map in de `/wp-content/plugins/` directory van je WordPress-installatie.
-2.  Ga naar het "Plugins" scherm in je WordPress-dashboard.
-3.  Zoek "Custom DropZone Uploader" in de lijst en klik op "Activeren".
-4.  Zorg ervoor dat het `config/dropzones.json` bestand bestaat en correct is geformatteerd.
+1.  Place the entire `custom-dropzone-plugin` directory into the `/wp-content/plugins/` directory of your WordPress installation.
+2.  Go to the "Plugins" screen in your WordPress dashboard.
+3.  Find "Custom DropZone Uploader" in the list and click "Activate".
+4.  Ensure that the `config/dropzones.json` file exists and is correctly formatted.
 
-## Configuratie (`dropzones.json`)
+## Configuration (`dropzones.json`)
 
-Dit is het hart van de plugin. Het is een array van JSON-objecten, waarbij elk object een complete dropzone-instantie (uploader + manager) definieert.
+This is the heart of the plugin. It is an array of JSON objects, where each object defines a complete dropzone instance (uploader + manager).
 
-### Basisstructuur
+### Basic Structure
 
 [
     {
@@ -67,46 +68,47 @@ Dit is het hart van de plugin. Het is een array van JSON-objecten, waarbij elk o
         "file_rules": { ... }
     }
 ]
-### Configuratieparameters
+### Configuration Parameters
 
-#### Hoofdparameters
+#### Top-Level Parameters
 
-| Parameter | Type   | Verplicht | Beschrijving                                                                                                              |
-| :-------- | :----- | :--------- | :------------------------------------------------------------------------------------------------------------------------ |
-| `slug`    | string | Ja         | Een unieke, korte naam zonder spaties (bv. `ovd`, `nieuwsbrief`). Wordt gebruikt om standaard shortcodes en JS-namen te maken. |
-| `file_rules` | object | Ja         | Een object dat de validatie- en padregels voor bestanden definieert. Zie hieronder.                                       |
-| `ui_texts`   | object | Nee        | Een object met teksten voor de gebruikersinterface.                                                                       |
-| `override_config` | object | Nee        | Een object om standaard gegenereerde instellingen (zoals shortcode-namen) te overschrijven.                          |
+| Parameter | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `slug` | string | Yes | A unique, short name without spaces (e.g., `ovd`, `newsletter`). Used to generate default shortcodes and JS filenames. |
+| `file_rules` | object | Yes | An object defining the validation and path rules for files. See below. |
+| `ui_texts` | object | No | An object containing text strings for the user interface. |
+| `override_config` | object | No | An object to override default generated settings (like shortcode names). |
 
 #### `file_rules`
 
-Definieert hoe bestanden worden gevalideerd en waar ze worden opgeslagen.
+Defines how files are validated and where they are stored.
 
-| Parameter                   | Type   | Standaardwaarde (voorbeeld)                                  | Beschrijving                                                                                              |
-| :-------------------------- | :----- | :----------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------- |
-| `target_subdir_pattern`     | string | De `slug`                                                    | De submap binnen `wp-content/uploads/` waar bestanden worden opgeslagen. Ondersteunt `date_i18n` formaten. |
-| `list_files_glob_pattern`   | string | `*slug*.pdf`                                                 | Het patroon (`glob`) dat wordt gebruikt om bestanden in de manager-weergave te vinden.                   |
-| `filename_keyword_ensure`   | string | De `slug`                                                    | Een trefwoord dat (indien afwezig) automatisch aan de bestandsnaam wordt toegevoegd. `null` om uit te schakelen. |
-| `filename_keyword_suffix`   | string | `_slug`                                                      | Het achtervoegsel dat wordt gebruikt als `filename_keyword_ensure` wordt toegepast.                       |
-| `name_pattern_prefix_regex` | string | `/.*/`                                                       | Een reguliere expressie waaraan het begin van de bestandsnaam moet voldoen.                               |
-| `name_pattern_keyword_regex`| string | `/slug/i`                                                    | Een reguliere expressie waaraan de bestandsnaam moet voldoen (meestal om het trefwoord te controleren).   |
-| `name_pattern_extension_regex` | string | `/\.pdf$/i`                                                  | Een reguliere expressie die de toegestane bestandsextensie(s) valideert.                                |
-| `allowed_mime_types`        | array  | `['application/pdf']`                                        | Een array van toegestane MIME-types voor uploads.                                                         |
+| Parameter | Type | Default (Example) | Description |
+| :--- | :--- | :--- | :--- |
+| `target_subdir_pattern` | string | The `slug` | The subdirectory within `wp-content/uploads/` where files are stored. Supports `date_i18n` formats. |
+| `list_files_glob_pattern` | string | `*slug*.pdf` | The pattern (`glob`) used to find files for the manager view. |
+| `filename_keyword_ensure` | string | The `slug` | A keyword that is automatically added to the filename if absent. Set to `null` to disable. |
+| `filename_keyword_suffix` | string | `_slug` | The suffix used when `filename_keyword_ensure` is applied. |
+| `name_pattern_prefix_regex` | string | `/.*/` | A regular expression that the start of the filename must match. |
+| `name_pattern_keyword_regex`| string | `/slug/i` | A regular expression that the filename must match (typically to check for the keyword). |
+| `name_pattern_extension_regex` | string | `/\.pdf$/i` | A regular expression that validates the allowed file extension(s). |
+| `allowed_mime_types` | array | `['application/pdf']` | An array of allowed MIME types for uploads. |
 
 #### `ui_texts`
 
-Past de teksten in de frontend aan.
+Customizes the text in the frontend.
 
-| Parameter            | Type   | Beschrijving                                         |
-| :------------------- | :----- | :--------------------------------------------------- |
-| `main_instruction`   | string | De hoofdinstructie in het upload-vak.                |
-| `button_text`        | string | De tekst op de "Selecteer Bestand" knop.             |
-| `section_title`      | string | De titel boven de bestandenlijst in de manager. `%s` wordt vervangen door de submapnaam. |
-| `no_files_message`   | string | Het bericht dat wordt getoond als er geen bestanden zijn gevonden. |
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `main_instruction` | string | The main instruction text in the upload box. |
+| `button_text` | string | The text on the "Select File" button. |
+| `section_title` | string | The title above the file list in the manager. `%s` is replaced with the subdirectory name. |
+| `no_files_message` | string | The message displayed when no files are found. |
 
 #### `override_config`
 
-Overschrijft standaard gegenereerde configuratiewaarden. Dit is voor geavanceerd gebruik.
+Overrides default generated configuration values. This is for advanced use.
+
 "override_config": {
     "uploader": {
         "shortcode_tag": "mijn_custom_uploader_shortcode",
@@ -118,26 +120,25 @@ Overschrijft standaard gegenereerde configuratiewaarden. Dit is voor geavanceerd
         "capability_manage": "edit_posts"
     }
 }
-## Gebruik
+## Usage
 
-Nadat je een configuratie met een `slug` van bijvoorbeeld `"ovd"` hebt toegevoegd, genereert de plugin de volgende shortcodes:
+After adding a configuration with a `slug` of, for example, `"sermon_notes"`, the plugin generates the following shortcodes:
 
-*   `[ovd_uploader]` - Toont de drag-and-drop upload-interface.
-*   `[ovd_manager]` - Toont de lijst met bestanden en beheeropties.
+*   `[sermon_notes_uploader]` - Displays the drag-and-drop upload interface.
+*   `[sermon_notes_manager]` - Displays the file list and management options.
 
-Als je de `shortcode_tag` hebt overschreven in de `override_config`, gebruik dan die naam. Plaats de gewenste shortcode op een pagina, bericht of in een widget.
+If you have overridden the `shortcode_tag` in the `override_config`, use that name instead. Place the desired shortcode on a page, post, or in a widget.
 
-## JavaScript Bestanden
+## JavaScript Files
 
-Voor elke `slug` verwacht de plugin dat er twee corresponderende JavaScript-bestanden bestaan in de `/js/` map:
+For each `slug`, the plugin expects two corresponding JavaScript files to exist in the `/js/` directory:
 
 1.  `[slug]-uploader.js`
 2.  `[slug]-manager.js`
 
-Deze bestanden bevatten de logica voor de frontend-interactie. De plugin laadt deze automatisch wanneer de bijbehorende shortcode wordt gebruikt.
+These files contain the logic for the frontend interaction. The plugin loads them automatically when their corresponding shortcode is used.
 
-## Voorbeeldconfiguratie
-
+## Example Configuration
 [
     {
         "slug": "ovd",
