@@ -1,0 +1,46 @@
+[
+    {
+        "slug": "ovd",
+        "file_rules": {
+            "target_subdir_pattern": "2025/01",
+            "filename_keyword_suffix": "_ovd",
+            "name_pattern_prefix_regex": "/^\\d{6}/"
+        },
+        "ui_texts": {
+            "main_instruction": "Sleep hier een PDF-bestand (yymmdd...ovd....pdf) naartoe",
+            "section_title": "Overzicht Ordes van Dienst (%s)"
+        },
+        "override_config": {
+            "uploader": {
+                "shortcode_tag": "mijn_upload_dropzone",
+                "ajax_action": "handle_custom_upload",
+                "nonce_action": "custom_upload_nonce",
+                "js_handle": "custom-uploader-js",
+                "js_localize_handle": "custom_uploader_params"
+            },
+            "manager": {
+                "shortcode_tag": "inhoud_ovd",
+                "ajax_action": "process_ovd_actions",
+                "nonce_action": "inhoud_ovd_actions_nonce",
+                "js_handle": "inhoud-ovd-js"
+            }
+        }
+    },
+    {
+        "slug": "nieuwsbrief",
+        "file_rules": {
+            "target_subdir_pattern": "nieuwsbrieven",
+            "list_files_glob_pattern": "NL_*.{pdf,docx}",
+            "name_pattern_prefix_regex": "/^NL_/",
+            "name_pattern_extension_regex": "/\\.(pdf|docx)$/i",
+            "allowed_mime_types": [
+                "application/pdf",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ],
+            "filename_keyword_ensure": null
+        },
+        "ui_texts": {
+            "main_instruction": "Sleep hier uw Nieuwsbrief (NL_....pdf/docx)"
+        }
+    }
+]
