@@ -34,15 +34,15 @@ The plugin follows a logical directory structure to keep its components organize
 
 
 /custom-dropzone-plugin/
-├── custom-dropzone-plugin.php      # Hoofd-pluginbestand, laadt alles.
-├── class-dropzone.php              # Bevat de kernklassen (FileUtils, DropZoneUploader, DropZoneManager).
+├── custom-dropzone-plugin.php      # Main plugin file, loads everything.
+├── class-dropzone.php              # Contains the core classes (FileUtils, DropZoneUploader, DropZoneManager).
 ├── config/
-│   └── dropzones.json              # Het centrale configuratiebestand.
+│   └── dropzones.json              # The central configuration file.
 ├── js/
-│   ├── ovd-uploader.js             # Voorbeeld JS voor de 'ovd' uploader.
-│   └── ovd-manager.js              # Voorbeeld JS voor de 'ovd' manager.
+│   ├── ovd-uploader.js             # Example JS for the 'ovd' uploader.
+│   └── ovd-manager.js              # Example JS for the 'ovd' manager
 │   └── (andere JS-bestanden...)
-└── README.md                       # Deze documentatie.
+└── README.md                       # This documentation.
 ## Installation
 
 1.  Place the entire `custom-dropzone-plugin` directory into the `/wp-content/plugins/` directory of your WordPress installation.
@@ -58,13 +58,13 @@ This is the heart of the plugin. It is an array of JSON objects, where each obje
 
 [
     {
-        "slug": "unieke_naam_1",
+        "slug": "unique_name_1",
         "file_rules": { ... },
         "ui_texts": { ... },
         "override_config": { ... }
     },
     {
-        "slug": "unieke_naam_2",
+        "slug": "unique_name_2",
         "file_rules": { ... }
     }
 ]
@@ -111,12 +111,12 @@ Overrides default generated configuration values. This is for advanced use.
 
 "override_config": {
     "uploader": {
-        "shortcode_tag": "mijn_custom_uploader_shortcode",
-        "ajax_action": "mijn_unieke_upload_actie",
-        "js_handle": "mijn-custom-js-handle"
+        "shortcode_tag": "my_custom_uploader_shortcode",
+        "ajax_action": "my_unique_upload_action",
+        "js_handle": "my-custom-js-handle"
     },
     "manager": {
-        "shortcode_tag": "mijn_custom_manager_shortcode",
+        "shortcode_tag": "my_custom_manager_shortcode",
         "capability_manage": "edit_posts"
     }
 }
