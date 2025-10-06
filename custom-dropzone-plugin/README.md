@@ -41,7 +41,7 @@ The plugin follows a logical directory structure to keep its components organize
 ├── js/
 │   ├── ovd-uploader.js             # Example JS for the 'ovd' uploader.
 │   └── ovd-manager.js              # Example JS for the 'ovd' manager
-│   └── (andere JS-bestanden...)
+│   └── (other JS-files...)
 └── README.md
 ```
 # This documentation.
