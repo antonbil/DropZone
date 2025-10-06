@@ -32,7 +32,7 @@ A flexible and configurable WordPress plugin that provides file upload and manag
 
 The plugin follows a logical directory structure to keep its components organized.
 
-
+```yaml
 /custom-dropzone-plugin/
 ├── custom-dropzone-plugin.php      # Main plugin file, loads everything.
 ├── class-dropzone.php              # Contains the core classes (FileUtils, DropZoneUploader, DropZoneManager).
@@ -42,7 +42,9 @@ The plugin follows a logical directory structure to keep its components organize
 │   ├── ovd-uploader.js             # Example JS for the 'ovd' uploader.
 │   └── ovd-manager.js              # Example JS for the 'ovd' manager
 │   └── (andere JS-bestanden...)
-└── README.md                       # This documentation.
+└── README.md
+```
+# This documentation.
 ## Installation
 
 1.  Place the entire `custom-dropzone-plugin` directory into the `/wp-content/plugins/` directory of your WordPress installation.
