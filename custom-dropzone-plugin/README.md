@@ -55,7 +55,7 @@ The plugin follows a logical directory structure to keep its components organize
 This is the heart of the plugin. It is an array of JSON objects, where each object defines a complete dropzone instance (uploader + manager).
 
 ### Basic Structure
-
+```json
 [
     {
         "slug": "unique_name_1",
@@ -68,6 +68,7 @@ This is the heart of the plugin. It is an array of JSON objects, where each obje
         "file_rules": { ... }
     }
 ]
+```
 ### Configuration Parameters
 
 #### Top-Level Parameters
@@ -108,7 +109,7 @@ Customizes the text in the frontend.
 #### `override_config`
 
 Overrides default generated configuration values. This is for advanced use.
-
+```json
 "override_config": {
     "uploader": {
         "shortcode_tag": "my_custom_uploader_shortcode",
@@ -120,6 +121,7 @@ Overrides default generated configuration values. This is for advanced use.
         "capability_manage": "edit_posts"
     }
 }
+```
 ## Usage
 
 After adding a configuration with a `slug` of, for example, `"sermon_notes"`, the plugin generates the following shortcodes:
@@ -139,6 +141,7 @@ For each `slug`, the plugin expects two corresponding JavaScript files to exist 
 These files contain the logic for the frontend interaction. The plugin loads them automatically when their corresponding shortcode is used.
 
 ## Example Configuration
+```json
 [
     {
         "slug": "ovd",
@@ -176,3 +179,4 @@ These files contain the logic for the frontend interaction. The plugin loads the
         }
     }
 ]
+```
