@@ -234,6 +234,25 @@ class DropZoneManager {
 
         $this->register_shortcode();
         $this->register_ajax_handler();
+                // Hook de enqueue-methode voor de stijlen.
+        add_action('wp_enqueue_scripts', [$this, 'dropzone_manager_enqueue_styles']);
+    }
+
+    /**
+     * Enqueues the main stylesheet for the Custom DropZone plugin.
+     */
+    public function dropzone_manager_enqueue_styles() {
+        // ... (de inhoud van je functie blijft hetzelfde) ...
+        global $post;
+        // Gebruik $this->shortcode_tag om de check dynamisch te maken
+        if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, $this->shortcode_tag ) ) {
+            wp_enqueue_style(
+                'dropzone-manager-style',
+                CUSTOM_DROPZONE_PLUGIN_URL . 'css/style.css',
+                [],
+                '1.0.1'
+            );
+        }
     }
 
     /**
@@ -245,6 +264,7 @@ class DropZoneManager {
         }
         add_shortcode($this->shortcode_tag, [$this, 'render_shortcode_content']);
     }
+
 
     /**
      * Renders the HTML for the shortcode.
