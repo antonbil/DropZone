@@ -1,36 +1,50 @@
 // js/custom-uploader.js
 jQuery(document).ready(function ($) {
+    // --- Element Selectors ---
     const dropzone = $('#custom-dropzone');
     const fileInput = $('#custom-file-input');
     const browseButton = $('#custom-browse-button');
     const feedbackDiv = $('#upload-feedback');
 
+    // --- Parameter Localization ---
+    // Localize the main parameters from WordPress (AJAX URL, nonce).
+    const uploader_params = window.custom_uploader_params || {};
+    // **NEW**: Localize the internationalization (i18n) strings passed from PHP.
+    const i18n = window.uploader_i18n_params || {};
+
+    // Do nothing if the dropzone is not present on the page.
     if (!dropzone.length) {
-        return; // Doe niets als de dropzone niet op de pagina is
+        return;
     }
 
+    // --- Event Handlers ---
+    // Open the file dialog when the browse button is clicked.
     browseButton.on('click', function () {
-        fileInput.click(); // Open de bestandsdialog wanneer op de knop wordt geklikt
+        fileInput.click();
     });
 
+    // Handle the file selection from the dialog.
     fileInput.on('change', function (e) {
         if (this.files.length > 0) {
             handleFile(this.files[0]);
         }
     });
 
+    // Provide visual feedback when a file is dragged over the dropzone.
     dropzone.on('dragover', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        dropzone.css('border-color', '#0073aa'); // Visuele feedback
+        dropzone.css('border-color', '#0073aa'); // Visual feedback
     });
 
+    // Reset visual feedback when the dragged file leaves the dropzone.
     dropzone.on('dragleave', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        dropzone.css('border-color', '#ccc'); // Reset visuele feedback
+        dropzone.css('border-color', '#ccc'); // Reset visual feedback
     });
 
+    // Handle the file drop event.
     dropzone.on('drop', function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -38,83 +52,87 @@ jQuery(document).ready(function ($) {
 
         const files = e.originalEvent.dataTransfer.files;
         if (files.length > 0) {
-            handleFile(files[0]); // Verwerk alleen het eerste bestand
+            handleFile(files[0]); // Process only the first file.
         }
     });
 
+    /**
+     * Core function to handle file processing and AJAX upload.
+     * @param {File} file The file to be uploaded.
+     */
     function handleFile(file) {
-        feedbackDiv.html('<p>Bezig met uploaden: ' + escapeHtml(file.name) + '</p>');
+        // Display initial "uploading" message.
+        feedbackDiv.html('<p>' + i18n.uploading_message + ' ' + escapeHtml(file.name) + '</p>');
         feedbackDiv.css('color', 'inherit');
 
-
-        // Client-side validatie (optioneel, maar goed voor directe feedback)
-        // Dit is een *extra* check; de server-side validatie is de belangrijkste.
+        // Client-side validation (optional, but good for immediate feedback).
+        // This is an *extra* check; server-side validation is the most important one.
         const fileName = file.name;
         const namePatternYymmdd = /^\d{6}/;
-        const namePatternOvd = /ovd/i;
         const namePatternPdf = /\.pdf$/i;
 
         if (file.type !== "application/pdf" || !namePatternPdf.test(fileName)) {
-            feedbackDiv.html('<p style="color:red;">Fout: Alleen PDF-bestanden zijn toegestaan en de naam moet eindigen op .pdf.</p>');
+            feedbackDiv.html('<p style="color:red;">' + i18n.error_prefix + ' ' + i18n.pdf_only_error + '</p>');
             return;
         }
         if (!namePatternYymmdd.test(fileName)) {
-            feedbackDiv.html('<p style="color:red;">Fout: Bestandsnaam moet beginnen met 6 cijfers (yymmdd).</p>');
+            feedbackDiv.html('<p style="color:red;">' + i18n.error_prefix + ' ' + i18n.yymmdd_error + '</p>');
             return;
         }
-        //if (!namePatternOvd.test(fileName)) {
-        //    feedbackDiv.html('<p style="color:red;">Fout: Bestandsnaam moet "ovd" bevatten.</p>');
-        //    return;
-        //}
 
-        // Maak FormData aan om het bestand te versturen
+        // Create FormData to send the file.
         const formData = new FormData();
-        formData.append('uploaded_file', file); // 'uploaded_file' moet overeenkomen met de key in $_FILES aan de serverkant
-        formData.append('action', 'handle_custom_upload'); // WordPress AJAX actie
-        formData.append('nonce', custom_uploader_params.nonce); // Nonce voor beveiliging
+        formData.append('uploaded_file', file); // 'uploaded_file' must match the key in $_FILES on the server side.
+        formData.append('action', uploader_params.action || 'handle_custom_upload'); // WordPress AJAX action.
+        formData.append('nonce', uploader_params.nonce); // Nonce for security.
 
-        // AJAX request met jQuery
+        // AJAX request with jQuery.
         $.ajax({
-            url: custom_uploader_params.ajax_url,
+            url: uploader_params.ajax_url,
             type: 'POST',
             data: formData,
-            contentType: false, // Belangrijk: laat jQuery de contentType niet instellen
-            processData: false, // Belangrijk: laat jQuery de data niet verwerken
+            contentType: false, // Important: let jQuery not set the contentType.
+            processData: false, // Important: let jQuery not process the data.
             success: function (response) {
                 if (response.success) {
                     feedbackDiv.html('<p style="color:green;">' + escapeHtml(response.data.message) + '</p>');
                     if (response.data.file_url) {
-                        feedbackDiv.append('<p>Bestand URL: <a href="' + escapeHtml(response.data.file_url) + '" target="_blank">' + escapeHtml(response.data.file_url) + '</a></p>');
+                        feedbackDiv.append('<p>' + i18n.file_url_label + ' <a href="' + escapeHtml(response.data.file_url) + '" target="_blank">' + escapeHtml(response.data.file_url) + '</a></p>');
                     }
                 } else {
-                    feedbackDiv.html('<p style="color:red;">Fout: ' + escapeHtml(response.data.message || 'Onbekende fout opgetreden.') + '</p>');
+                    const errorMessage = response.data.message || i18n.unknown_error;
+                    feedbackDiv.html('<p style="color:red;">' + i18n.error_prefix + ' ' + escapeHtml(errorMessage) + '</p>');
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                let errorMessage = 'AJAX Fout: ' + textStatus + ' - ' + errorThrown;
+                let errorMessage = i18n.ajax_error_prefix + ' ' + textStatus + ' - ' + errorThrown;
                 if (jqXHR.responseJSON && jqXHR.responseJSON.data && jqXHR.responseJSON.data.message) {
-                    errorMessage = 'Fout: ' + escapeHtml(jqXHR.responseJSON.data.message);
+                    errorMessage = i18n.error_prefix + ' ' + escapeHtml(jqXHR.responseJSON.data.message);
                 } else if (jqXHR.responseText) {
-                    // Probeer de response tekst te parsen als het geen JSON was maar wel tekst bevat
+                    // Try to parse the response text if it wasn't JSON but contains text.
                     try {
                         const errResponse = JSON.parse(jqXHR.responseText);
                         if (errResponse.data && errResponse.data.message) {
-                            errorMessage = 'Fout: ' + escapeHtml(errResponse.data.message);
+                            errorMessage = i18n.error_prefix + ' ' + escapeHtml(errResponse.data.message);
                         }
                     } catch (e) {
-                        // Doe niets als parsen mislukt, gebruik de algemene error
+                        // Do nothing if parsing fails, use the generic error.
                     }
                 }
                 feedbackDiv.html('<p style="color:red;">' + errorMessage + '</p>');
             },
             complete: function () {
-                // Herstel de file input zodat dezelfde file opnieuw geselecteerd kan worden
+                // Restore the file input so the same file can be selected again.
                 fileInput.val('');
             }
         });
     }
 
-    // Helper functie om HTML te escapen voor weergave
+    /**
+     * Helper function to escape HTML for display.
+     * @param {string} unsafe The potentially unsafe string.
+     * @returns {string} The sanitized, safe string.
+     */
     function escapeHtml(unsafe) {
         if (typeof unsafe !== 'string') {
             return '';
