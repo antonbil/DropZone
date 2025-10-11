@@ -61,7 +61,7 @@ jQuery(document).ready(function ($) {
             const originalFilename = $(this).closest('.file-item').data('filename');
             const newFilename = $(this).val().trim();
             if (newFilename !== '' && newFilename !== originalFilename) {
-                actionsHtml += '<li><strong>' + i18n.rename_label + '</strong> "' + escapeHtml(originalFilename) + '" &rarr; "' + escapeHtml(newFilename) + '"</li>';
+                actionsHtml += '<li><strong>' + "Rename" + '</strong> "' + escapeHtml(originalFilename) + '" &rarr; "' + escapeHtml(newFilename) + '"</li>';
                 hasActions = true;
             }
         });
@@ -71,7 +71,7 @@ jQuery(document).ready(function ($) {
             actionsSummaryDiv.html(actionsHtml);
             confirmationArea.show();
         } else {
-            feedbackArea.html('<p>' + i18n.no_actions_selected + '</p>').show();
+            feedbackArea.html('<p>' + "No actions selected" + '</p>').show();
         }
     });
 
@@ -84,7 +84,7 @@ jQuery(document).ready(function ($) {
     // "Yes, Execute Actions" button handler.
     executeBtn.on('click', function () {
         // Disable buttons to prevent multiple clicks and provide feedback.
-        $(this).prop('disabled', true).text(i18n.processing_text);
+        $(this).prop('disabled', true).text("Processing");
         cancelBtn.prop('disabled', true);
         feedbackArea.empty().hide();
 
@@ -118,25 +118,25 @@ jQuery(document).ready(function ($) {
             data: dataToSend,
             dataType: 'json',
             success: function (response) {
-                let feedbackHtml = '<h4>' + i18n.processing_result_title + '</h4><ul>';
+                let feedbackHtml = '<h4>' + "Processing result" + '</h4><ul>';
                 let hasSuccessMessages = false;
 
                 if (response.success && response.data) {
                     if (response.data.deleted && response.data.deleted.length > 0) {
                         response.data.deleted.forEach(function (file) {
-                            feedbackHtml += '<li style="color:green;">' + i18n.deleted_feedback + ' ' + escapeHtml(file) + '</li>';
+                            feedbackHtml += '<li style="color:green;">' + "Deleted" + ' ' + escapeHtml(file) + '</li>';
                             hasSuccessMessages = true;
                         });
                     }
                     if (response.data.renamed && response.data.renamed.length > 0) {
                         response.data.renamed.forEach(function (item) {
-                            feedbackHtml += '<li style="color:green;">' + i18n.renamed_feedback + ' "' + escapeHtml(item.old) + '" &rarr; "' + escapeHtml(item.new) + '"</li>';
+                            feedbackHtml += '<li style="color:green;">' + "Renamed" + ' "' + escapeHtml(item.old) + '" &rarr; "' + escapeHtml(item.new) + '"</li>';
                             hasSuccessMessages = true;
                         });
                     }
                     if (response.data.errors && response.data.errors.length > 0) {
                         response.data.errors.forEach(function (error) {
-                            feedbackHtml += '<li style="color:red;">' + i18n.error_feedback + ' ' + escapeHtml(error) + '</li>';
+                            feedbackHtml += '<li style="color:red;">' + "Error" + ' ' + escapeHtml(error) + '</li>';
                         });
                     }
                     if (response.data.message && !hasSuccessMessages && (!response.data.errors || response.data.errors.length === 0)) {
@@ -145,12 +145,12 @@ jQuery(document).ready(function ($) {
 
                 } else {
                     const errorMessage = (response.data && response.data.message) || i18n.unknown_server_error;
-                    feedbackHtml += '<li style="color:red;">' + i18n.error_feedback + ' ' + escapeHtml(errorMessage) + '</li>';
+                    feedbackHtml += '<li style="color:red;">' + "error feedback" + ' ' + escapeHtml(errorMessage) + '</li>';
                 }
                 feedbackHtml += '</ul>';
 
                 if (hasSuccessMessages) {
-                    feedbackHtml += '<p><strong>' + i18n.reload_message + '</strong></p>';
+                    feedbackHtml += '<p><strong>' + "Reload" + '</strong></p>';
                     setTimeout(function () {
                         location.reload();
                     }, 5000);
@@ -160,16 +160,16 @@ jQuery(document).ready(function ($) {
                 confirmationArea.hide();
             },
             error: function (jqXHR) {
-                let errorMessage = i18n.ajax_error_message;
+                let errorMessage = "Ajax error message";
                  if (jqXHR.responseJSON && jqXHR.responseJSON.data && jqXHR.responseJSON.data.message) {
-                    errorMessage = i18n.server_error_prefix + ' ' + escapeHtml(jqXHR.responseJSON.data.message);
+                    errorMessage = "server error prefix" + ' ' + escapeHtml(jqXHR.responseJSON.data.message);
                 }
                 feedbackArea.html('<p style="color:red;">' + errorMessage + '</p>').show();
                 confirmationArea.hide();
             },
             complete: function () {
                 // Re-enable buttons after the process is finished.
-                executeBtn.prop('disabled', false).text(i18n.execute_button_text);
+                executeBtn.prop('disabled', false).text("Execute");
                 cancelBtn.prop('disabled', false);
             }
         });
