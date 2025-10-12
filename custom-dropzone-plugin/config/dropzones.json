@@ -42,5 +42,25 @@
         "ui_texts": {
             "main_instruction": "Sleep hier uw Nieuwsbrief (NL_....pdf/docx)"
         }
+    },
+    {
+        "slug": "inzendingen",
+        "file_rules": {
+            "target_subdir_pattern": "inzendingen",
+            "list_files_glob_pattern": "*.doc",
+            "name_pattern_extension_regex": "/\\.doc$/i",
+            "allowed_mime_types": [
+                "application/msword"
+            ],
+            "filename_keyword_ensure": null
+        },
+        "ui_texts": {
+            "main_instruction": "Sleep hier uw .doc bestand voor inzendingen"
+        },
+        "override_config": {
+            "uploader": {
+                "js_localize_handle": "custom_uploader_params"
+            }
+        }
     }
 ]
