@@ -1,4 +1,5 @@
 // js/custom-uploader.js
+//second linee
 jQuery(document).ready(function ($) {
     // --- Element Selectors ---
     const dropzone = $('#custom-dropzone');

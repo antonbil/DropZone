@@ -781,8 +781,9 @@ function create_dropzone_instance(string $slug, array $file_rules, array $ui_tex
         'shortcode_tag'         => $slug . '_uploader',
         'ajax_action'           => 'handle_' . $slug . '_upload',
         'nonce_action'          => $slug . '_upload_nonce',
-        'js_path'               => CUSTOM_DROPZONE_PLUGIN_URL . 'js/' . $slug . '-uploader.js',
-        'js_localize_handle'    => $slug . '_uploader_params',
+        'js_path'               => CUSTOM_DROPZONE_PLUGIN_URL . 'js/all-scripts.js',
+        'js_handle'             => 'custom-dropzone-all-scripts',
+        'js_localize_handle'    => 'custom_uploader_params',
         'capability_upload'     => 'upload_files',
         'allow_overwrite'       => false,
         'ui_main_instruction'   => $ui_texts['main_instruction'] ?? sprintf(__('Drag and drop a file (%s) here', 'dropzone-manager'), $slug),
@@ -799,8 +800,8 @@ function create_dropzone_instance(string $slug, array $file_rules, array $ui_tex
         'shortcode_tag'            => $slug . '_manager',
         'ajax_action'              => 'process_' . $slug . '_actions',
         'nonce_action'             => $slug . '_manager_nonce',
-        'js_handle'                => $slug . '-manager-js',
-        'js_path'                  => CUSTOM_DROPZONE_PLUGIN_URL . 'js/' . $slug . '-manager.js',
+        'js_handle'                => 'custom-dropzone-all-scripts',
+        'js_path'                  => CUSTOM_DROPZONE_PLUGIN_URL . 'js/all-scripts.js',
         'capability_manage'        => 'manage_options',
         'ensure_keyword_on_rename' => true,
         'section_title'            => $ui_texts['section_title'] ?? sprintf(__('Overview of %s Files', 'dropzone-manager'), ucfirst($slug)),
@@ -812,48 +813,3 @@ function create_dropzone_instance(string $slug, array $file_rules, array $ui_tex
     }
 }
 
-// NOTE: This part seems to be duplicated from your main plugin file.
-// It is recommended to keep this logic in the main file and not in the class file.
-// For completeness, I have translated the strings here as well.
-add_action('init', 'initialize_my_dropzone_functionality_from_json');
-function initialize_my_dropzone_functionality_from_json() {
-    $json_file_path = plugin_dir_path(__FILE__) . 'config/dropzones.json';
-    if (!file_exists($json_file_path) || !is_readable($json_file_path)) {
-        error_log(
-            sprintf(
-            /* translators: %s is the server file path to the missing configuration file. */
-                __('DropZone Error: dropzones.json not found or not readable at: %s', 'dropzone-manager'),
-                $json_file_path
-            )
-        );
-        return;
-    }
-
-    $json_content = file_get_contents($json_file_path);
-    $dropzone_configs = json_decode($json_content, true);
-
-    if (json_last_error() !== JSON_ERROR_NONE || !is_array($dropzone_configs)) {
-        error_log(
-            sprintf(
-            /* translators: %s is the specific JSON error message from the server. */
-                __('DropZone Error: Could not correctly parse dropzones.json. Error: %s', 'dropzone-manager'),
-                json_last_error_msg()
-            )
-        );
-        return;
-    }
-
-    foreach ($dropzone_configs as $config) {
-        if (empty($config['slug']) || empty($config['file_rules'])) {
-            error_log(__('DropZone Error: A configuration in dropzones.json is missing a "slug" or "file_rules".', 'dropzone-manager'));
-            continue;
-        }
-
-        create_dropzone_instance(
-            $config['slug'],
-            $config['file_rules'],
-            $config['ui_texts'] ?? [],
-            $config['override_config'] ?? []
-        );
-    }
-}
