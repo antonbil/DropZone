@@ -22,7 +22,8 @@
                 "shortcode_tag": "inhoud_ovd",
                 "ajax_action": "process_ovd_actions",
                 "nonce_action": "inhoud_ovd_actions_nonce",
-                "js_handle": "inhoud-ovd-js"
+                "js_handle": "inhoud-ovd-js",
+                "capability_manage": "edit_others_posts"
             }
         }
     },
@@ -59,7 +60,17 @@
         },
         "override_config": {
             "uploader": {
+                "shortcode_tag": "inzendingen_dropzone",
+                "ajax_action": "handle_custom_upload",
+                "nonce_action": "custom_upload_nonce",
+                "js_handle": "custom-uploader-js",
                 "js_localize_handle": "custom_uploader_params"
+            },
+            "manager": {
+                "shortcode_tag": "inzendingen_manager",
+                "ajax_action": "process_ovd_actions",
+                "nonce_action": "inhoud_ovd_actions_nonce",
+                "js_handle": "inhoud-ovd-js"
             }
         }
     }

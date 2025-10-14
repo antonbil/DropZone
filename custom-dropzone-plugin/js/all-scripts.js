@@ -34,13 +34,16 @@
         const i18n = window.manager_i18n_params || {};
 
         fileList.on('click', '.rename-toggle-btn', function () {
+            console.log('Click rename.');
             const wrapper = $(this).siblings('.rename-field-wrapper');
             const inputField = wrapper.find('.new-name-input');
             wrapper.toggle();
+            console.log('Click rename afer toggle.', wrapper);
             if (wrapper.is(':visible')) {
                 inputField.focus();
                 const currentFilename = $(this).closest('.file-item').data('filename');
                 inputField.val(currentFilename);
+                console.log('Rename.',inputField);
             }
         });
 
@@ -102,7 +105,7 @@
                 const newFilename = $(this).val().trim();
                 if (newFilename !== '' && newFilename !== originalFilename) {
                     dataToSend.rename_files[originalFilename] = newFilename;
-                }
+                }ja
             });
 
             $.ajax({
