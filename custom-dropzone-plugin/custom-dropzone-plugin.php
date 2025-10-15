@@ -97,6 +97,3 @@ function initialize_dropzone_plugin_from_json() {
 }
 add_action('init', 'initialize_dropzone_plugin_from_json');
 
-// The 'correct_dropzone_script_paths' function and its corresponding filter have been removed.
-// This logic is now better handled within the OOP structure of the classes themselves,
-// where paths are constructed during object initialization. This significantly simplifies the main plugin file.
