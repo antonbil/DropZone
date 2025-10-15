@@ -1,6 +1,17 @@
 (function ($) {
     'use strict';
 
+    // Global flag to ensure the script runs only once.
+    if (window.OVD_MANAGER_LOADED) {
+        console.warn("OVD Manager script was loaded twice. Execution halted.");
+        return; // Stop the execution of the entire IIFE
+    }
+
+    // Set the flag after the check
+    window.OVD_MANAGER_LOADED = true;
+
+    let debugging = false;
+
     /**
      * Helper function to escape HTML characters for safe display.
      * @param {string} unsafe The potentially unsafe string.
@@ -18,6 +29,7 @@
 
     // --- Plugin Manager ---
     function initializeManager() {
+        if (debugging)  console.log("start");
         const container = $('#file-manager-container');
         if (!container.length) return;
 
@@ -34,16 +46,16 @@
         const i18n = window.manager_i18n_params || {};
 
         fileList.on('click', '.rename-toggle-btn', function () {
-            console.log('Click rename.');
+            if (debugging)  console.log('Click rename.');
             const wrapper = $(this).siblings('.rename-field-wrapper');
             const inputField = wrapper.find('.new-name-input');
             wrapper.toggle();
-            console.log('Click rename afer toggle.', wrapper);
+            if (debugging)  console.log('Click rename afer toggle.', wrapper);
             if (wrapper.is(':visible')) {
                 inputField.focus();
                 const currentFilename = $(this).closest('.file-item').data('filename');
                 inputField.val(currentFilename);
-                console.log('Rename.',inputField);
+                if (debugging)  console.log('Rename.',inputField);
             }
         });
 
@@ -105,7 +117,7 @@
                 const newFilename = $(this).val().trim();
                 if (newFilename !== '' && newFilename !== originalFilename) {
                     dataToSend.rename_files[originalFilename] = newFilename;
-                }ja
+                }
             });
 
             $.ajax({
@@ -155,7 +167,7 @@
                     confirmationArea.hide();
                 },
                 error: function (jqXHR) {
-                    console.log("Manager AJAX Error:", jqXHR);
+                    if (debugging)  console.log("Manager AJAX Error:", jqXHR);
                     let errorMessage = i18n.ajax_error_message || 'Ajax error';
                     if (jqXHR.responseJSON && jqXHR.responseJSON.data && jqXHR.responseJSON.data.message) {
                         errorMessage = (i18n.server_error_prefix || 'Server error') + ' ' + escapeHtml(jqXHR.responseJSON.data.message);
@@ -173,33 +185,33 @@
 
     // --- Custom Uploader ---
     function initializeUploader() {
-        console.log('Initializing uploader...');
+        if (debugging)  console.log('Initializing uploader...');
         const dropzone = $('#custom-dropzone');
         if (!dropzone.length) {
-            console.log('Uploader dropzone not found.');
+            if (debugging)  console.log('Uploader dropzone not found.');
             return;
         }
-        console.log('Uploader dropzone found.');
+        if (debugging)  console.log('Uploader dropzone found.');
 
         const fileInput = $('#custom-file-input');
         const browseButton = $('#custom-browse-button');
         const feedbackDiv = $('#upload-feedback');
-        console.log('Uploader elements:', { fileInput, browseButton, feedbackDiv });
+        if (debugging)  console.log('Uploader elements:', { fileInput, browseButton, feedbackDiv });
 
         const uploader_params = window.custom_uploader_params || {};
         const i18n = window.uploader_i18n_params || {};
-        console.log('Uploader params:', uploader_params);
-        console.log('Uploader i18n:', i18n);
+        if (debugging)  console.log('Uploader params:', uploader_params);
+        if (debugging)  console.log('Uploader i18n:', i18n);
 
         browseButton.on('click', function () {
-            console.log('Browse button clicked.');
+            if (debugging)  console.log('Browse button clicked.');
             fileInput.click();
         });
 
         fileInput.on('change', function () {
-            console.log('File input changed.');
+            if (debugging)  console.log('File input changed.');
             if (this.files.length > 0) {
-                console.log('File selected:', this.files[0]);
+                if (debugging)  console.log('File selected:', this.files[0]);
                 handleFile(this.files[0]);
             }
         });
@@ -217,48 +229,48 @@
         });
 
         dropzone.on('drop', function (e) {
-            console.log('File dropped.');
+            if (debugging)  console.log('File dropped.');
             e.preventDefault();
             e.stopPropagation();
             dropzone.css('border-color', '#ccc');
             const files = e.originalEvent.dataTransfer.files;
             if (files.length > 0) {
-                console.log('Dropped file:', files[0]);
+                if (debugging)  console.log('Dropped file:', files[0]);
                 handleFile(files[0]);
             }
         });
 
         function handleFile(file) {
-            console.log('handleFile called with file:', file);
+            if (debugging)  console.log('handleFile called with file:', file);
             feedbackDiv.html('<p>' + (i18n.uploading_message || 'Uploading:') + ' ' + escapeHtml(file.name) + '</p>').css('color', 'inherit');
 
             const fileName = file.name;
             const namePatternYymmdd = /^\d{6}/;
             const namePatternPdf = /\.pdf$/i;
 
-            console.log('Validating file:', fileName);
+            if (debugging)  console.log('Validating file:', fileName);
             if (file.type !== "application/pdf" || !namePatternPdf.test(fileName)) {
-                console.log('Validation failed: not a PDF.');
+                if (debugging)  console.log('Validation failed: not a PDF.');
                 feedbackDiv.html('<p style="color:red;">' + (i18n.error_prefix || 'Error:') + ' ' + (i18n.pdf_only_error || 'PDF only') + '</p>');
                 return;
             }
             if (!namePatternYymmdd.test(fileName)) {
-                console.log('Validation failed: does not start with yymmdd.');
+                if (debugging)  console.log('Validation failed: does not start with yymmdd.');
                 feedbackDiv.html('<p style="color:red;">' + (i18n.error_prefix || 'Error:') + ' ' + (i18n.yymmdd_error || 'Filename must start with yymmdd') + '</p>');
                 return;
             }
-            console.log('File validation passed.');
+            if (debugging)  console.log('File validation passed.');
 
             const formData = new FormData();
             formData.append('uploaded_file', file);
             formData.append('action', uploader_params.action || 'handle_custom_upload');
             formData.append('nonce', uploader_params.nonce);
-            console.log('FormData created:', {
+            if (debugging)  console.log('FormData created:', {
                 action: uploader_params.action || 'handle_custom_upload',
                 nonce: uploader_params.nonce
             });
 
-            console.log('Starting AJAX request...');
+            if (debugging)  console.log('Starting AJAX request...');
             $.ajax({
                 url: uploader_params.ajax_url,
                 type: 'POST',
@@ -266,19 +278,23 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    console.log('AJAX success:', response);
+                    if (debugging)  console.log('AJAX success:', response);
                     if (response.success) {
                         feedbackDiv.html('<p style="color:green;">' + escapeHtml(response.data.message) + '</p>');
                         if (response.data.file_url) {
                             feedbackDiv.append('<p>' + (i18n.file_url_label || 'File URL:') + ' <a href="' + escapeHtml(response.data.file_url) + '" target="_blank">' + escapeHtml(response.data.file_url) + '</a></p>');
                         }
+                        feedbackDiv.append( '<p><strong>' + (i18n.reload_message || 'Reloading...') + '</strong></p>');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 5000);
                     } else {
                         const errorMessage = response.data.message || i18n.unknown_error;
                         feedbackDiv.html('<p style="color:red;">' + (i18n.error_prefix || 'Error:') + ' ' + escapeHtml(errorMessage) + '</p>');
                     }
                 },
                 error: function (jqXHR) {
-                    console.log("Uploader AJAX Error:", jqXHR);
+                    if (debugging)  console.log("Uploader AJAX Error:", jqXHR);
                     let errorMessage = (i18n.ajax_error_prefix || 'AJAX Error:') + ' ' + jqXHR.statusText;
                      if (jqXHR.responseJSON && jqXHR.responseJSON.data && jqXHR.responseJSON.data.message) {
                         errorMessage = (i18n.error_prefix || 'Error:') + ' ' + escapeHtml(jqXHR.responseJSON.data.message);
@@ -286,7 +302,7 @@
                     feedbackDiv.html('<p style="color:red;">' + errorMessage + '</p>');
                 },
                 complete: function () {
-                    console.log('AJAX request complete.');
+                    if (debugging)  console.log('AJAX request complete.');
                     fileInput.val('');
                 }
             });
